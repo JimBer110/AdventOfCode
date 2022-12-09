@@ -1,10 +1,11 @@
 import os
 import time
+import datetime
 import sys
 
 cwd = os.getcwd()
-years = []
-days = []
+years = list(range(2015, datetime.datetime.now().year+1))
+days = [("Day %s" %(item+1)) for item in range(25)]
 
 def handle_flags(_flag):
     if _flag.isnumeric():
@@ -26,19 +27,20 @@ for i in range(1, len(sys.argv)):
 
 start_time = time.time()
 for year in years:
-    print("###### Year %s ######" %(year))
-    year_start_time = time.time()
-    for (root, dirs, files) in os.walk('./%s' %(year)):
+    if os.path.exists(str(year)):
+        print("###### Year %s ######" %(year))
+        year_start_time = time.time()
+        for (root, dirs, files) in os.walk('./%s' %(year)):
 
-        if root.split("/")[-1] in days:
-            for file in files:
-                if file[-3:] == ".py":
-                    ind_start = time.time()
-                    print("##### %s #####" %(root.split("/")[-1]))
-                    os.chdir(root)
-                    os.system("python3 %s >/dev/null" %(file))
-                    os.chdir(cwd)
-                    print("Time taken: %s seconds\n" %(round(time.time()-ind_start, 3)))
-    print("Total time for year: %s seconds\n\n" %(round(time.time()-year_start_time, 3)))
+            if root.split("/")[-1] in days:
+                for file in files:
+                    if file[-3:] == ".py":
+                        ind_start = time.time()
+                        print("##### %s #####" %(root.split("/")[-1]))
+                        os.chdir(root)
+                        os.system("python3 %s >/dev/null" %(file))
+                        os.chdir(cwd)
+                        print("Time taken: %s seconds\n" %(round(time.time()-ind_start, 3)))
+        print("Total time for year: %s seconds\n\n" %(round(time.time()-year_start_time, 3)))
 
 print("Total time: %s seconds" %(round(time.time()-start_time, 3)))
