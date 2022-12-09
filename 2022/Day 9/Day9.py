@@ -20,33 +20,43 @@ def handle_follow(tail, head):
             else:
                 return (tail[0]-1, tail[1])
     else:
-        if abs(tail[0]-head[0]) == 1:
-            return handle_follow((head[0], tail[1]), head)
-        else:
-            return handle_follow((tail[0], head[1]), head)
+        if (head[0] > tail[0] and head[1] > tail[1]):
+            return (tail[0]+1, tail[1]+1)
+        if (head[0] > tail[0] and head[1] < tail[1]):
+            return (tail[0]+1, tail[1]-1)
+        if (head[0] < tail[0] and head[1] > tail[1]):
+            return (tail[0]-1, tail[1]+1)
+        if (head[0] < tail[0] and head[1] < tail[1]):
+            return (tail[0]-1, tail[1]-1)
 
-def handle_movement(head_pos, tail_pos, tail_visited, line):
+
+def handle_movement(rope, tail_visited, line):
     for i in range(int(line[1])):
         if line[0] == "U":
-            head_pos = (head_pos[0], head_pos[1]-1)
+            rope[0] = (rope[0][0], rope[0][1]-1)
         elif line[0] == "D":
-            head_pos = (head_pos[0], head_pos[1]+1)
+            rope[0] = (rope[0][0], rope[0][1]+1)
         elif line[0] == "L":
-            head_pos = (head_pos[0]-1, head_pos[1])
+            rope[0] = (rope[0][0]-1, rope[0][1])
         else:
-            head_pos = (head_pos[0]+1, head_pos[1])
-        if get_distance(head_pos, tail_pos) > 1:
-            tail_pos = handle_follow(tail_pos, head_pos)
-            if tail_pos not in tail_visited:
-                tail_visited.append(tail_pos)
-    return head_pos, tail_pos, tail_visited
+            rope[0] = (rope[0][0]+1, rope[0][1])
+
+        if rope[0] not in tail_visited[0]:
+            tail_visited[0].append(rope[0])
+
+        for j in range(1, len(rope)):
+            if get_distance(rope[j-1], rope[j]) > 1:
+                rope[j] = handle_follow(rope[j], rope[j-1])
+                if rope[j] not in tail_visited[j]:
+                    tail_visited[j].append(rope[j])
 
 starting_pos = (0,0)
-tail_pos = starting_pos
-head_pos = starting_pos
-tail_visited = [starting_pos]
+rope_len = 10
+tail_visited = [[starting_pos] for i in range((rope_len))]
+rope = [starting_pos]*rope_len
 
 for i in range(len(lines)):
-    head_pos, tail_pos, tail_visited = handle_movement(head_pos, tail_pos, tail_visited, lines[i].split(" "))
+    handle_movement(rope, tail_visited, lines[i].split(" "))
 
-print("Task 1: %s" %(len(tail_visited)))
+print("Task 1: %s" %(len(tail_visited[1])))
+print("Task 2: %s" %(len(tail_visited[9])))
