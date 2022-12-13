@@ -40,8 +40,8 @@ def handle_axis(coor, graph):
 
 
 def link_tree(current_node, graph, node_to_find):
-    queue = [current_node]
-    visited = [current_node]
+    queue = current_node.copy()
+    visited = current_node
 
     while queue:
         current_node = queue.pop(0)
@@ -57,19 +57,18 @@ def link_tree(current_node, graph, node_to_find):
 
 # link tree
 current_node = starting_point
-found_node = link_tree(current_node, graph, end_point)
+found_node = link_tree([current_node], graph, end_point)
 
 print("Task 1: %s" %(found_node.depth))
 
-smallest = found_node.depth
+starting_points = []
 for i in range(len(graph)):
     for j in range(len(graph[i])):
         current_node = graph[i][j]
         if current_node.elevation == 0:
+            starting_points.append(current_node)
             current_node.depth = 0
-            tmp = link_tree(current_node, graph, end_point)
-            if tmp != None:
-                if tmp.depth < smallest:
-                    smallest = tmp.depth
+
+smallest = link_tree(starting_points, graph, end_point).depth
 
 print("Task 2: %s" %(smallest))
